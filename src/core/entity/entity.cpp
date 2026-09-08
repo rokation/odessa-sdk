@@ -1,10 +1,23 @@
 #include "core/entity/entity.hpp"
+
 #include "utils/uuid.hpp"
 
-odessa::core::Entity::Entity(EntityType type) : type_(type) {
+namespace odessa::core {
+Entity::Entity(EntityType type) : type_(type) {
   id_ = odessa::util::generate_uuid();
 }
 
-const boost::uuids::uuid odessa::core::Entity::id() const {
-  return id_;
-}
+const boost::uuids::uuid Entity::id() const { return id_; }
+
+LLA& Entity::lla() { return lla_; }
+
+Position& Entity::position() { return position_; }
+
+Velocity& Entity::velocity() { return velocity_; }
+
+void Entity::set_lla(LLA lla) { lla_ = lla; }
+
+void Entity::set_position(Position position) { position_ = position; }
+
+void Entity::set_velocity(Velocity velocity) { velocity_ = velocity; }
+}  // namespace odessa::core
