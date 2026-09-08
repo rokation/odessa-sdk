@@ -1,0 +1,7 @@
+.cache
+.docs
+.idea
+.DS_Store
+
+build
+run.sh
