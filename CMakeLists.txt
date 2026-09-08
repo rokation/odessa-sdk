@@ -13,8 +13,8 @@ add_executable(odessa
     src/main.cpp
     src/utils/uuid.cpp
     src/core/entity/entity.cpp
+    src/core/world/world.cpp
 )
-
 
 target_include_directories(odessa PRIVATE
 ${CMAKE_CURRENT_SOURCE_DIR}/include
