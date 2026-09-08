@@ -1,7 +1,7 @@
 
 #include "utils/uuid.hpp"
 
-namespace odesa::util {
+namespace odessa::util {
 boost::uuids::uuid generate_uuid() {
     boost::uuids::random_generator gen;
     boost::uuids::uuid id = gen();

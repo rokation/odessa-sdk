@@ -1,10 +1,10 @@
 #include "core/entity/entity.hpp"
 #include "utils/uuid.hpp"
 
-odesa::core::Entity::Entity(EntityType type) : type_(type) {
-  id_ = odesa::util::generate_uuid();
+odessa::core::Entity::Entity(EntityType type) : type_(type) {
+  id_ = odessa::util::generate_uuid();
 }
 
-const boost::uuids::uuid odesa::core::Entity::id() const {
+const boost::uuids::uuid odessa::core::Entity::id() const {
   return id_;
 }
