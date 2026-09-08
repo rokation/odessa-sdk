@@ -7,7 +7,7 @@ Entity::Entity(EntityType type) : type_(type) {
   id_ = odessa::util::generate_uuid();
 }
 
-const boost::uuids::uuid Entity::id() const { return id_; }
+boost::uuids::uuid Entity::id() const { return id_; }
 
 LLA& Entity::lla() { return lla_; }
 

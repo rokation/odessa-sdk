@@ -12,7 +12,7 @@ using EntityId = boost::uuids::uuid;
 class Entity {
  public:
   Entity(EntityType type);
-  const boost::uuids::uuid id() const;
+  boost::uuids::uuid id() const;
   LLA& lla();
   Position& position();
   Velocity& velocity();
