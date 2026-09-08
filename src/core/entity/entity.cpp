@@ -8,11 +8,11 @@ Entity::Entity(EntityType type) : id_(util::generate_uuid()), type_(type), lla_{
 
 boost::uuids::uuid Entity::id() const { return id_; }
 
-LLA& Entity::lla() { return lla_; }
+LLA Entity::lla() { return lla_; }
 
-Position& Entity::position() { return position_; }
+Position Entity::position() { return position_; }
 
-Velocity& Entity::velocity() { return velocity_; }
+Velocity Entity::velocity() { return velocity_; }
 
 void Entity::set_lla(LLA lla) { lla_ = lla; }
 
