@@ -7,11 +7,14 @@ using WorldId = boost::uuids::uuid;
 class World {
  public:
   World();
-  void spawn(EntityType type);
-  std::vector<std::unique_ptr<Entity>>& entities();
-  const std::vector<std::unique_ptr<Entity>>& entities() const;
+  Entity* get(EntityId entity_id);
+  const Entity* get(EntityId entity_id) const;
+  Entity& spawn(EntityType type);
+  bool destroy(EntityId entity_id);
+  bool move(EntityId entity_id, LLA lla);
+
  private:
   WorldId id_;
-  std::vector<std::unique_ptr<Entity>> entities_;
+  std::unordered_map<EntityId, Entity> entities_;
 };
 }  // namespace odessa::core
