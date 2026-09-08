@@ -7,10 +7,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_package(Boost REQUIRED)
+
 add_executable(odesa
     src/main.cpp
+    src/utils/uuid.cpp
+    src/core/entity/entity.cpp
 )
 
+
 target_include_directories(odesa PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+target_link_libraries(odesa PRIVATE Boost::boost)
