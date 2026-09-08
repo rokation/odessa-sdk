@@ -11,7 +11,7 @@ enum class EntityType { DRONE, ROBOT, SENSOR, VEHICLE, CAMERA, VESSEL };
 using EntityId = boost::uuids::uuid;
 class Entity {
  public:
-  Entity(EntityType type);
+  explicit Entity(EntityType type);
   boost::uuids::uuid id() const;
   LLA& lla();
   Position& position();
