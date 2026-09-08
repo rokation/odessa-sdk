@@ -2,6 +2,7 @@
 .docs
 .idea
 .DS_Store
+.vscode
 
 build
 run.sh
