@@ -7,34 +7,47 @@
 namespace odessa::core {
 World::World() { id_ = util::generate_uuid(); }
 
-Entity* World::get(EntityId entity_id) {
-  auto it = entities_.find(entity_id);
+EntityId World::spawn(EntityType type) {
+  std::lock_guard lock(mutex_);
 
-  if (it == entities_.end()) {
-    return nullptr;
-  }
-  return &it->second;
-}
-
-const Entity* World::get(EntityId entity_id) const {
-  auto it = entities_.find(entity_id);
-
-  if (it == entities_.end()) {
-    return nullptr;
-  }
-  return &it->second;
-}
-
-Entity& World::spawn(EntityType type) {
   Entity entity(type);
   EntityId entity_id = entity.id();
 
-  auto [it, inserted] = entities_.emplace(entity_id, std::move(entity));
+  entities_.emplace(entity_id, std::move(entity));
 
-  return it->second;
+  return entity_id;
+}
+
+void World::for_each(const std::function<void(Entity&)>& fn) {
+  for (auto& [entity_id, entity] : entities_) {
+    fn(entity);
+  }
+}
+
+void World::update(double dt) {
+  std::lock_guard lock(mutex_);
+  for (auto& [entity_id, entity] : entities_) {
+    entity.update(dt);
+  }
+}
+
+bool World::move(EntityId entity_id, LLA lla) {
+  std::lock_guard lock(mutex_);
+
+  auto it = entities_.find(entity_id);
+
+  if (it == entities_.end()) {
+    return false;
+  }
+
+  it->second.set_position(lla);
+
+  return true;
 }
 
 bool World::destroy(EntityId entity_id) {
+  std::lock_guard lock(mutex_);
+
   auto it = entities_.find(entity_id);
 
   if (it == entities_.end()) {
@@ -45,16 +58,94 @@ bool World::destroy(EntityId entity_id) {
   return true;
 }
 
-bool World::move(EntityId entity_id, LLA lla) {
-  auto* entity = get(entity_id);
+bool World::set_position(EntityId entity_id, LLA lla) {
+  auto it = entities_.find(entity_id);
 
-  std::cout << entity->id() << std::endl;
-
-  if (entity == nullptr) {
+  if (it == entities_.end()) {
     return false;
   }
 
-  entity->set_lla(lla);
+  // TODO: LLA 변환
+  // it->second.set_position();
+
   return true;
+}
+bool World::set_position(EntityId entity_id, Position position) {
+  auto it = entities_.find(entity_id);
+
+  if (it == entities_.end()) {
+    return false;
+  }
+
+  it->second.set_position(position);
+
+  return true;
+}
+bool World::set_velocity(EntityId entity_id, Velocity velocity) {
+  auto it = entities_.find(entity_id);
+
+  if (it == entities_.end()) {
+    return false;
+  }
+
+  it->second.set_velocity(velocity);
+
+  return true;
+}
+
+std::optional<LLA> World::get_lla(EntityId entity_id) const {
+  std::lock_guard lock(mutex_);
+
+  auto it = entities_.find(entity_id);
+
+  if (it == entities_.end()) {
+    return std::nullopt;
+  }
+
+  return it->second.lla();
+}
+
+std::optional<Position> World::get_position(EntityId entity_id) const {
+  auto it = entities_.find(entity_id);
+
+  if (it == entities_.end()) {
+    return std::nullopt;
+  }
+
+  return it->second.position();
+}
+
+std::optional<Velocity> World::get_velocity(EntityId entity_id) const {
+  auto it = entities_.find(entity_id);
+
+  if (it == entities_.end()) {
+    return std::nullopt;
+  }
+
+  return it->second.velocity();
+}
+
+std::optional<EntitySnapshot> World::snapshot(EntityId entity_id) const {
+  std::lock_guard lock(mutex_);
+
+  auto it = entities_.find(entity_id);
+
+  if (it == entities_.end()) {
+    return std::nullopt;
+  }
+
+  const auto& entity = it->second;
+
+  return EntitySnapshot {
+    entity.id(),
+    entity.type(),
+    entity.lla(),
+    entity.position(),
+    entity.velocity(),
+  };
+}
+
+std::size_t World::entity_count() const {
+  return entities_.size();
 }
 }  // namespace odessa::core
