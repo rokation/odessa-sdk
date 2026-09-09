@@ -24,6 +24,7 @@ class World {
   std::optional<Velocity> get_velocity(EntityId entity_id) const;
 
   std::optional<EntitySnapshot> snapshot(EntityId entity_id) const;
+  std::vector<EntitySnapshot> snapshot_all() const;
   std::size_t entity_count() const;
 
  private:

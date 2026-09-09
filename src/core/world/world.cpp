@@ -136,16 +136,30 @@ std::optional<EntitySnapshot> World::snapshot(EntityId entity_id) const {
 
   const auto& entity = it->second;
 
-  return EntitySnapshot {
-    entity.id(),
-    entity.type(),
-    entity.lla(),
-    entity.position(),
-    entity.velocity(),
+  return EntitySnapshot{
+      entity.id(),       entity.type(),     entity.lla(),
+      entity.position(), entity.velocity(),
   };
 }
 
-std::size_t World::entity_count() const {
-  return entities_.size();
+std::vector<EntitySnapshot> World::snapshot_all() const {
+  std::lock_guard lock(mutex_);
+
+  std::vector<EntitySnapshot> snapshots;
+  snapshots.reserve(entities_.size());
+
+  for (const auto& [entity_id, entity] : entities_) {
+    snapshots.push_back({
+      entity.id(),
+      entity.type(),
+      entity.lla(),
+      entity.position(),
+      entity.velocity()
+    });
+  }
+
+  return snapshots;
 }
+
+std::size_t World::entity_count() const { return entities_.size(); }
 }  // namespace odessa::core
