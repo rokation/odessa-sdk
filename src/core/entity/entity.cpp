@@ -8,15 +8,23 @@ Entity::Entity(EntityType type) : id_(util::generate_uuid()), type_(type), lla_{
 
 boost::uuids::uuid Entity::id() const { return id_; }
 
-LLA Entity::lla() { return lla_; }
+EntityType Entity::type() const { return type_; }
 
-Position Entity::position() { return position_; }
+LLA Entity::lla() const { return lla_; }
 
-Velocity Entity::velocity() { return velocity_; }
+Position Entity::position() const { return position_; }
 
-void Entity::set_lla(LLA lla) { lla_ = lla; }
+Velocity Entity::velocity() const { return velocity_; }
+
+void Entity::set_position(LLA lla) { lla_ = lla; }
 
 void Entity::set_position(Position position) { position_ = position; }
 
 void Entity::set_velocity(Velocity velocity) { velocity_ = velocity; }
+
+void Entity::update(double dt) {
+  position_.x += velocity_.x * dt;
+  position_.y += velocity_.y * dt;
+  position_.z += velocity_.z * dt;
+}
 }  // namespace odessa::core

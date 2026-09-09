@@ -13,12 +13,18 @@ class Entity {
  public:
   explicit Entity(EntityType type);
   boost::uuids::uuid id() const;
-  LLA lla();
-  Position position();
-  Velocity velocity();
-  void set_lla(LLA lla);
+  EntityType type() const;
+
+  LLA lla() const;
+  void set_position(LLA lla);
+
+  Position position() const;
   void set_position(Position position);
+
+  Velocity velocity() const;
   void set_velocity(Velocity velocity);
+
+  void update(double dt);
 
  private:
   boost::uuids::uuid id_;
