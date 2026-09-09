@@ -25,8 +25,6 @@ void Runtime::run() {
         std::chrono::milliseconds(16)
     );
   }
-
-  std::cout << "종료" << std::endl;
 }
 
 void Runtime::stop() {
