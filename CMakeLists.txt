@@ -14,6 +14,8 @@ add_executable(odessa
     src/utils/uuid.cpp
     src/core/entity/entity.cpp
     src/core/world/world.cpp
+    src/core/runtime/runtime.cpp
+        include/core/entity/entity_snapshot.hpp
 )
 
 target_include_directories(odessa PRIVATE
