@@ -1,7 +1,9 @@
 #pragma once
 
+#include "core/attach/attach.hpp"
 #include "core/entity/entity.hpp"
 #include "core/entity/entity_snapshot.hpp"
+#include "core/event/event.hpp"
 
 namespace odessa::core {
 using WorldId = boost::uuids::uuid;
@@ -12,10 +14,10 @@ class World {
   void for_each(const std::function<void(Entity&)>& fn);
 
   void update(double dt);
-  bool move(EntityId entity_id, LLA lla);
+  bool move(EntityId entity_id, Position position);
   bool destroy(EntityId entity_id);
 
-  bool set_position(EntityId entity_id, LLA lla);
+  bool set_lla(EntityId entity_id, LLA lla);
   bool set_position(EntityId entity_id, Position position);
   bool set_velocity(EntityId entity_id, Velocity velocity);
 
@@ -27,9 +29,15 @@ class World {
   std::vector<EntitySnapshot> snapshot_all() const;
   std::size_t entity_count() const;
 
+  EntityId attach(EntityType entity_type, std::string external_id);
+  bool contains(EntityId entity_id) const;
+  std::vector<Event> consume_events();
+
  private:
   mutable std::mutex mutex_;
   WorldId id_;
   std::unordered_map<EntityId, Entity> entities_;
+  std::unordered_map<std::string, Attachment> attachments_;
+  std::vector<Event> events_;
 };
 }  // namespace odessa::core
