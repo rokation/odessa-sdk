@@ -3,8 +3,12 @@
 #include "utils/uuid.hpp"
 
 namespace odessa::core {
-Entity::Entity(EntityType type) : id_(util::generate_uuid()), type_(type), lla_{}, position_{}, velocity_{}  {
-}
+Entity::Entity(EntityType type)
+    : id_(util::generate_uuid()),
+      type_(type),
+      lla_{},
+      position_{},
+      velocity_{} {}
 
 boost::uuids::uuid Entity::id() const { return id_; }
 

@@ -1,19 +1,24 @@
 #include "core/world/world.hpp"
 
+#include <algorithm>
 #include <iostream>
 
+#include "core/attach/attach.hpp"
+#include "core/entity/entity.hpp"
+#include "core/event/event.hpp"
 #include "utils/uuid.hpp"
 
 namespace odessa::core {
 World::World() { id_ = util::generate_uuid(); }
 
-EntityId World::spawn(EntityType type) {
+EntityId World::spawn(EntityType entity_type) {
   std::lock_guard lock(mutex_);
 
-  Entity entity(type);
+  Entity entity(entity_type);
   EntityId entity_id = entity.id();
 
   entities_.emplace(entity_id, std::move(entity));
+  events_.push_back(EntitySpawned{entity_id});
 
   return entity_id;
 }
@@ -27,11 +32,20 @@ void World::for_each(const std::function<void(Entity&)>& fn) {
 void World::update(double dt) {
   std::lock_guard lock(mutex_);
   for (auto& [entity_id, entity] : entities_) {
+    auto old_position = entity.position();
+
     entity.update(dt);
+
+    auto new_position = entity.position();
+
+    if (old_position.x != new_position.x || old_position.y != new_position.y ||
+        old_position.z != new_position.z) {
+      events_.push_back(EntityMoved{entity_id, new_position});
+    }
   }
 }
 
-bool World::move(EntityId entity_id, LLA lla) {
+bool World::move(EntityId entity_id, Position position) {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -40,8 +54,8 @@ bool World::move(EntityId entity_id, LLA lla) {
     return false;
   }
 
-  it->second.set_position(lla);
-
+  it->second.set_position(position);
+  events_.push_back(EntityMoved{entity_id, position});
   return true;
 }
 
@@ -55,10 +69,12 @@ bool World::destroy(EntityId entity_id) {
   }
 
   entities_.erase(it);
+  events_.push_back(EntityDestroyed{entity_id});
+
   return true;
 }
 
-bool World::set_position(EntityId entity_id, LLA lla) {
+bool World::set_lla(EntityId entity_id, LLA lla) {
   auto it = entities_.find(entity_id);
 
   if (it == entities_.end()) {
@@ -149,16 +165,32 @@ std::vector<EntitySnapshot> World::snapshot_all() const {
   snapshots.reserve(entities_.size());
 
   for (const auto& [entity_id, entity] : entities_) {
-    snapshots.push_back({
-      entity.id(),
-      entity.type(),
-      entity.lla(),
-      entity.position(),
-      entity.velocity()
-    });
+    snapshots.push_back({entity.id(), entity.type(), entity.lla(),
+                         entity.position(), entity.velocity()});
   }
 
   return snapshots;
+}
+
+std::vector<Event> World::consume_events() {
+  std::lock_guard lock(mutex_);
+
+  std::vector<Event> events;
+
+  events.swap(events_);
+
+  return events;
+}
+
+EntityId World::attach(EntityType entity_type, std::string external_id) {
+  auto entity_id = spawn(entity_type);
+  attachments_.emplace(std::move(external_id),
+                       Attachment{entity_id, external_id});
+  return entity_id;
+}
+
+bool World::contains(EntityId entity_id) const {
+  return entities_.contains(entity_id);
 }
 
 std::size_t World::entity_count() const { return entities_.size(); }

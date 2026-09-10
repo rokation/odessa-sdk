@@ -1,7 +1,9 @@
 #include "core/runtime/runtime.hpp"
 
-#include <iostream>
 #include <thread>
+#include <variant>
+
+#include "core/event/event.hpp"
 
 namespace odessa::core {
 void Runtime::run() {
@@ -12,8 +14,7 @@ void Runtime::run() {
   while (running_) {
     auto current = std::chrono::steady_clock::now();
 
-    std::chrono::duration<double> elapsed =
-        current - previous;
+    std::chrono::duration<double> elapsed = current - previous;
 
     double dt = elapsed.count();
 
@@ -21,21 +22,20 @@ void Runtime::run() {
 
     update(dt);
 
-    std::this_thread::sleep_for(
-        std::chrono::milliseconds(16)
-    );
+    std::this_thread::sleep_for(std::chrono::milliseconds(16));
   }
 }
 
-void Runtime::stop() {
-  running_ = false;
-}
+void Runtime::stop() { running_ = false; }
 
 void Runtime::update(double dt) {
   world().update(dt);
+  auto events = world_.consume_events();
+
+  for (const auto& event : events) {
+    std::visit(EventHandler{}, event);
+  }
 }
 
-World& Runtime::world() {
-  return world_;
-}
+World& Runtime::world() { return world_; }
 }  // namespace odessa::core
