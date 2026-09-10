@@ -22,6 +22,14 @@ add_executable(world_test
     tests/world_test.cpp
     src/core/entity/entity.cpp
     src/core/world/world.cpp
+    src/utils/uuid.cpp
+)
+
+
+add_executable(runtime_test
+    tests/runtime_test.cpp
+    src/core/entity/entity.cpp
+    src/core/world/world.cpp
     src/core/runtime/runtime.cpp
     src/utils/uuid.cpp
 )
@@ -34,5 +42,10 @@ target_include_directories(world_test PRIVATE
 ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+target_include_directories(runtime_test PRIVATE
+${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
 target_link_libraries(odessa PRIVATE Boost::boost)
 target_link_libraries(world_test PRIVATE Boost::boost)
+target_link_libraries(runtime_test PRIVATE Boost::boost)
