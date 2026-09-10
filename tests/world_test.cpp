@@ -34,15 +34,18 @@ void test_update() {
 void test_events() {
   odessa::core::World world;
   auto id = world.spawn(odessa::core::EntityType::DRONE);
+  world.set_velocity(id, {10.0, 0.0, 0.0});
+
   auto events = world.consume_events();
 
   const auto& spawned = std::get<odessa::core::EntitySpawned>(events[0]);
+
   assert(spawned.event_id == id);
 
-  world.set_velocity(id, {10.0, 0.0, 0.0});
   world.update(0.1);
 
   events = world.consume_events();
+
   const auto& moved = std::get<odessa::core::EntityMoved>(events[0]);
 
   assert(moved.event_id == id);
@@ -50,7 +53,9 @@ void test_events() {
   assert(world.destroy(id));
 
   events = world.consume_events();
+
   const auto& destoryed = std::get<odessa::core::EntityDestroyed>(events[0]);
+
   assert(destoryed.event_id == id);
 }
 
