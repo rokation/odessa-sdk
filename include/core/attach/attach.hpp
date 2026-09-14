@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <optional>
 
 #include "core/entity/entity.hpp"
 
