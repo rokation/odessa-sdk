@@ -1,14 +1,11 @@
 #include "core/world/world.hpp"
 
-#include <algorithm>
-#include <iostream>
 #include <mutex>
 #include <optional>
 
 #include "core/attach/attach.hpp"
 #include "core/components/lla.hpp"
 #include "core/entity/entity.hpp"
-#include "core/entity/entity_snapshot.hpp"
 #include "core/event/event.hpp"
 #include "utils/uuid.hpp"
 
@@ -38,9 +35,7 @@ void World::update(double dt) {
 
     if (old_position.x != new_position.x || old_position.y != new_position.y ||
         old_position.z != new_position.z) {
-      events_.push_back(EntityMoved{entity_id, entity_id, entity.type(),
-                                    entity.lla(), entity.position(),
-                                    entity.velocity()});
+      events_.push_back(EntityMoved{entity_id, entity.snapshot()});
     }
   }
 }
@@ -79,13 +74,7 @@ bool World::set_lla(EntityId entity_id, LLA lla) {
 
   auto& entity = it->second;
   entity.set_lla(lla);
-  events_.push_back(EntityMoved{entity_id, EntitySnapshot{
-                                               entity_id,
-                                               entity.type(),
-                                               entity.lla(),
-                                               entity.position(),
-                                               entity.velocity(),
-                                           }});
+  events_.push_back(EntityMoved{entity_id, entity.snapshot()});
   return true;
 }
 
@@ -99,13 +88,7 @@ bool World::set_position(EntityId entity_id, Position position) {
 
   auto& entity = it->second;
   entity.set_position(position);
-  events_.push_back(EntityMoved{entity_id, EntitySnapshot{
-                                               entity_id,
-                                               entity.type(),
-                                               entity.lla(),
-                                               entity.position(),
-                                               entity.velocity(),
-                                           }});
+  events_.push_back(EntityMoved{entity_id, entity.snapshot()});
 
   return true;
 }

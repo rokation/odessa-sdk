@@ -2,7 +2,6 @@
 
 #include "core/attach/attach.hpp"
 #include "core/entity/entity.hpp"
-#include "core/entity/entity_snapshot.hpp"
 #include "core/event/event.hpp"
 
 namespace odessa::core {

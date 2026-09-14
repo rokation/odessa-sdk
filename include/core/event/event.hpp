@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "core/entity/entity.hpp"
-#include "core/entity/entity_snapshot.hpp"
 #include "utils/uuid.hpp"
 
 namespace odessa::core {
