@@ -20,7 +20,7 @@ Position Entity::position() const { return position_; }
 
 Velocity Entity::velocity() const { return velocity_; }
 
-void Entity::set_position(LLA lla) { lla_ = lla; }
+void Entity::set_lla(LLA lla) { lla_ = lla; }
 
 void Entity::set_position(Position position) { position_ = position; }
 

@@ -16,7 +16,7 @@ class Entity {
   EntityType type() const;
 
   LLA lla() const;
-  void set_position(LLA lla);
+  void set_lla(LLA lla);
 
   Position position() const;
   void set_position(Position position);
