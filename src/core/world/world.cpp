@@ -147,12 +147,7 @@ std::optional<EntitySnapshot> World::snapshot(EntityId entity_id) const {
     return std::nullopt;
   }
 
-  const auto& entity = it->second;
-
-  return EntitySnapshot{
-      entity.id(),       entity.type(),     entity.lla(),
-      entity.position(), entity.velocity(),
-  };
+  return it->second.snapshot();
 }
 
 std::vector<EntitySnapshot> World::snapshot_all() const {
@@ -162,8 +157,7 @@ std::vector<EntitySnapshot> World::snapshot_all() const {
   snapshots.reserve(entities_.size());
 
   for (const auto& [entity_id, entity] : entities_) {
-    snapshots.push_back({entity.id(), entity.type(), entity.lla(),
-                         entity.position(), entity.velocity()});
+    snapshots.push_back(entity.snapshot());
   }
 
   return snapshots;
