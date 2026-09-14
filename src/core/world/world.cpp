@@ -12,6 +12,8 @@
 namespace odessa::core {
 World::World() { id_ = util::generate_uuid(); }
 
+WorldId World::id() const { return id_; }
+
 EntityId World::spawn(EntityType entity_type) {
   std::lock_guard lock(mutex_);
 

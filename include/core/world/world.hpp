@@ -9,6 +9,8 @@ using WorldId = boost::uuids::uuid;
 class World {
  public:
   World();
+  WorldId id() const;
+
   EntityId spawn(EntityType type);
 
   void update(double dt);
