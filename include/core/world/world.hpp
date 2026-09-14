@@ -11,7 +11,6 @@ class World {
  public:
   World();
   EntityId spawn(EntityType type);
-  void for_each(const std::function<void(Entity&)>& fn);
 
   void update(double dt);
   bool move(EntityId entity_id, Position position);
@@ -29,9 +28,11 @@ class World {
   std::vector<EntitySnapshot> snapshot_all() const;
   std::size_t entity_count() const;
 
-  EntityId attach(EntityType entity_type, std::string external_id);
   bool contains(EntityId entity_id) const;
   std::vector<Event> consume_events();
+
+  EntityId attach(EntityType entity_type, std::string external_id);
+  std::optional<EntityId> find_by_external_id(std::string& external_id) const;
 
  private:
   mutable std::mutex mutex_;
