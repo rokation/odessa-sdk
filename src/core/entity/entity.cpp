@@ -33,7 +33,7 @@ void Entity::update(double dt) {
 }
 
 EntitySnapshot Entity::snapshot() const {
-  return EntitySnapshot { id_, type_, lla_, position_, velocity_ }
+  return EntitySnapshot{id_, type_, lla_, position_, velocity_};
 }
 
 }  // namespace odessa::core
