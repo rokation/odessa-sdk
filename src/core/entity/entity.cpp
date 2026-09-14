@@ -31,4 +31,9 @@ void Entity::update(double dt) {
   position_.y += velocity_.y * dt;
   position_.z += velocity_.z * dt;
 }
+
+EntitySnapshot Entity::snapshot() const {
+  return EntitySnapshot { id_, type_, lla_, position_, velocity_ }
+}
+
 }  // namespace odessa::core
