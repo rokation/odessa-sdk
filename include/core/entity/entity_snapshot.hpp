@@ -3,6 +3,7 @@
 #include "core/components/lla.hpp"
 #include "core/components/position.hpp"
 #include "core/components/velocity.hpp"
+#include "core/entity/entity.hpp"
 
 namespace odessa::core {
 struct EntitySnapshot {
