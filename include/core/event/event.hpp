@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "core/entity/entity.hpp"
+#include "core/entity/entity_snapshot.hpp"
 #include "utils/uuid.hpp"
 
 namespace odessa::core {
@@ -14,7 +15,7 @@ struct EntitySpawned {
 
 struct EntityMoved {
   EntityId event_id;
-  Position position;
+  EntitySnapshot snapshot;
 };
 
 struct EntityDestroyed {
@@ -29,8 +30,9 @@ struct EventHandler {
 
   void operator()(const EntityMoved& event) const {
     std::cout << "[" << util::uuid_string_from_raw(event.event_id) << "] "
-              << "Moved (" << event.position.x << ", " << event.position.y
-              << ", " << event.position.z << ")" << std::endl;
+              << "Moved (" << event.snapshot.position.x << ", "
+              << event.snapshot.position.y << ", " << event.snapshot.position.z
+              << ")" << std::endl;
   }
 
   void operator()(const EntityDestroyed& event) const {
