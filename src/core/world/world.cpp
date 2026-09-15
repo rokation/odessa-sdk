@@ -21,6 +21,10 @@ EntityId World::spawn(EntityType entity_type) {
 }
 
 void World::update(double dt) {
+  if (dt < 0.0) {
+    return;
+  }
+
   std::lock_guard lock(mutex_);
   for (auto& [entity_id, entity] : entities_) {
     auto old_position = entity.position();
