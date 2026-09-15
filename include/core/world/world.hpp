@@ -46,6 +46,9 @@ class World {
                                    EntityType type) const;
 
  private:
+  std::vector<EntityId> query(
+      const std::function<bool(const Entity&)>& predicate) const;
+
   mutable std::mutex mutex_;
   WorldId id_;
   std::unordered_map<EntityId, Entity> entities_;
