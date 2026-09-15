@@ -207,7 +207,7 @@ bool World::detach(const std::string& external_id) {
 }
 
 std::optional<EntityId> World::find_by_external_id(
-    std::string& external_id) const {
+    const std::string& external_id) const {
   std::lock_guard lock(mutex_);
   auto it = attachments_.find(external_id);
 
