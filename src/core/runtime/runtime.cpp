@@ -1,9 +1,6 @@
 #include "core/runtime/runtime.hpp"
 
 #include <thread>
-#include <variant>
-
-#include "core/event/event.hpp"
 
 namespace odessa::core {
 void Runtime::run() {
@@ -28,14 +25,7 @@ void Runtime::run() {
 
 void Runtime::stop() { running_ = false; }
 
-void Runtime::update(double dt) {
-  world().update(dt);
-  auto events = world_.consume_events();
-
-  for (const auto& event : events) {
-    std::visit(EventHandler{}, event);
-  }
-}
+void Runtime::update(double dt) { world().update(dt); }
 
 World& Runtime::world() { return world_; }
 }  // namespace odessa::core
