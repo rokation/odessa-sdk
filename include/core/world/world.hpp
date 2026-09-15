@@ -15,7 +15,7 @@ class World {
   WorldId id() const;
   std::optional<EntitySnapshot> find(EntityId entity_id);
 
-  EntityId spawn(EntityType type);
+  EntityId spawn(EntityType entity_type);
 
   void update(double dt);
   bool move(EntityId entity_id, Position position);
@@ -42,15 +42,16 @@ class World {
 
   std::vector<EntityId> query_radius(Position& center, double radius) const;
   std::vector<EntityId> query_radius(Position& center, double radius,
-                                     EntityType type) const;
+                                     EntityType entity_type) const;
 
   std::vector<EntityId> query_bbox(Position& min, Position& max) const;
   std::vector<EntityId> query_bbox(Position& min, Position& max,
-                                   EntityType type) const;
+                                   EntityType entity_type) const;
 
-  std::vector<EntityId> query_type(EntityType type) const;
+  std::vector<EntityId> query_type(EntityType entity_type) const;
 
  private:
+  EntityId spawn_unlocked(EntityType entity_type);
   std::vector<EntityId> query(
       const std::function<bool(const Entity&)>& predicate) const;
 
