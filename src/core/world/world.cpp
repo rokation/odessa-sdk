@@ -262,4 +262,61 @@ std::vector<EntityId> World::query_radius(Position& center, double radius,
 
   return result;
 }
+
+std::vector<EntityId> World::query_bbox(Position& min, Position& max) const {
+  std::lock_guard<std::mutex> lock(mutex_);
+
+  std::vector<EntityId> result;
+
+  for (const auto& [entity_id, entity] : entities_) {
+    const auto& position = entity.position();
+
+    if (position.x < min.x || position.x > max.x) {
+      continue;
+    }
+
+    if (position.y < min.y || position.y > max.y) {
+      continue;
+    }
+
+    if (position.z < min.z || position.z > max.z) {
+      continue;
+    }
+
+    result.push_back(entity_id);
+  }
+
+  return result;
+}
+
+std::vector<EntityId> World::query_bbox(Position& min, Position& max,
+                                        EntityType type) const {
+  std::lock_guard<std::mutex> lock(mutex_);
+
+  std::vector<EntityId> result;
+
+  for (const auto& [entity_id, entity] : entities_) {
+    if (entity.type() != type) {
+      continue;
+    }
+
+    const auto& position = entity.position();
+
+    if (position.x < min.x || position.x > max.x) {
+      continue;
+    }
+
+    if (position.y < min.y || position.y > max.y) {
+      continue;
+    }
+
+    if (position.z < min.z || position.z > max.z) {
+      continue;
+    }
+
+    result.push_back(entity_id);
+  }
+
+  return result;
+}
 }  // namespace odessa::core

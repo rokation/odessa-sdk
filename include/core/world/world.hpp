@@ -41,6 +41,10 @@ class World {
   std::vector<EntityId> query_radius(Position& center, double radius,
                                      EntityType type) const;
 
+  std::vector<EntityId> query_bbox(Position& min, Position& max) const;
+  std::vector<EntityId> query_bbox(Position& min, Position& max,
+                                   EntityType type) const;
+
  private:
   mutable std::mutex mutex_;
   WorldId id_;
