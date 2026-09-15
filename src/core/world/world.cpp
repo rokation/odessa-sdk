@@ -227,6 +227,10 @@ std::vector<EntityId> World::query(
 
 std::vector<EntityId> World::query_radius(Position& center,
                                           double radius) const {
+  if (radius < 0.0) {
+    return {};
+  }
+
   double radius_squared = radius * radius;
 
   return query([&](const Entity& entity) {
@@ -244,6 +248,10 @@ std::vector<EntityId> World::query_radius(Position& center,
 
 std::vector<EntityId> World::query_radius(Position& center, double radius,
                                           EntityType type) const {
+  if (radius < 0.0) {
+    return {};
+  }
+
   double radius_squared = radius * radius;
 
   return query([&](const Entity& entity) {
@@ -283,5 +291,9 @@ std::vector<EntityId> World::query_bbox(Position& min, Position& max,
     return position.x >= min.x && position.x <= max.x && position.y >= min.y &&
            position.y <= max.y && position.z >= min.z && position.z <= max.z;
   });
+}
+
+std::vector<EntityId> World::query_type(EntityType type) const {
+  return query([&](const Entity& entity) { return entity.type() == type; });
 }
 }  // namespace odessa::core

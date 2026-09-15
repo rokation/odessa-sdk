@@ -45,6 +45,8 @@ class World {
   std::vector<EntityId> query_bbox(Position& min, Position& max,
                                    EntityType type) const;
 
+  std::vector<EntityId> query_type(EntityType type) const;
+
  private:
   std::vector<EntityId> query(
       const std::function<bool(const Entity&)>& predicate) const;
