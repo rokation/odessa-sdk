@@ -13,6 +13,8 @@ class World {
  public:
   World();
   WorldId id() const;
+  std::optional<EntitySnapshot> find(EntityId entity_id);
+
   EntityId spawn(EntityType type);
 
   void update(double dt);

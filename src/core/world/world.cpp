@@ -312,4 +312,14 @@ std::vector<EntityId> World::query_bbox(Position& min, Position& max,
 std::vector<EntityId> World::query_type(EntityType type) const {
   return query([&](const Entity& entity) { return entity.type() == type; });
 }
+
+std::optional<EntitySnapshot> World::find(EntityId entity_id) {
+  auto it = entities_.find(entity_id);
+
+  if (it == entities_.end()) {
+    return std::nullopt;
+  }
+
+  return it->second.snapshot();
+}
 }  // namespace odessa::core
