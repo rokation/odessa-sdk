@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "core/attach/attach.hpp"
 #include "core/entity/entity.hpp"
 #include "core/event/event.hpp"
@@ -34,6 +36,10 @@ class World {
 
   EntityId attach(EntityType entity_type, std::string external_id);
   std::optional<EntityId> find_by_external_id(std::string& external_id) const;
+
+  std::vector<EntityId> query_radius(Position& center, double radius) const;
+  std::vector<EntityId> query_radius(Position& center, double radius,
+                                     EntityType type) const;
 
  private:
   mutable std::mutex mutex_;

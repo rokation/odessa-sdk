@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include <optional>
+#include <vector>
 
 #include "core/attach/attach.hpp"
 #include "core/components/lla.hpp"
@@ -207,5 +208,58 @@ std::optional<EntityId> World::find_by_external_id(
   }
 
   return it->second.entity_id;
+}
+
+// TODO: Spatial Index 적용
+std::vector<EntityId> World::query_radius(Position& center,
+                                          double radius) const {
+  std::lock_guard lock(mutex_);
+
+  std::vector<EntityId> result;
+  double radius_squared = radius * radius;
+
+  for (const auto [entity_id, entity] : entities_) {
+    const auto& position = entity.position();
+
+    const double dx = position.x - center.x;
+    const double dy = position.y - center.y;
+    const double dz = position.z - center.z;
+
+    const double distance_squared = dx * dx + dy * dy + dz * dz;
+
+    if (distance_squared <= radius_squared) {
+      result.push_back(entity_id);
+    }
+  }
+
+  return result;
+}
+
+std::vector<EntityId> World::query_radius(Position& center, double radius,
+                                          EntityType type) const {
+  std::lock_guard lock(mutex_);
+
+  std::vector<EntityId> result;
+  double radius_squared = radius * radius;
+
+  for (const auto [entity_id, entity] : entities_) {
+    if (entity.type() != type) {
+      continue;
+    }
+
+    const auto& position = entity.position();
+
+    const double dx = position.x - center.x;
+    const double dy = position.y - center.y;
+    const double dz = position.z - center.z;
+
+    const double distance_squared = dx * dx + dy * dy + dz * dz;
+
+    if (distance_squared <= radius_squared) {
+      result.push_back(entity_id);
+    }
+  }
+
+  return result;
 }
 }  // namespace odessa::core
