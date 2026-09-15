@@ -1,5 +1,6 @@
 #include "core/world/world.hpp"
 
+#include <cmath>
 #include <mutex>
 #include <optional>
 #include <vector>
@@ -21,7 +22,7 @@ EntityId World::spawn(EntityType entity_type) {
 }
 
 void World::update(double dt) {
-  if (dt < 0.0) {
+  if (!std::isfinite(dt) || dt < 0.0) {
     return;
   }
 
