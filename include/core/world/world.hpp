@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <vector>
 
 #include "core/attach/attach.hpp"
@@ -12,7 +13,6 @@ class World {
  public:
   World();
   WorldId id() const;
-
   EntityId spawn(EntityType type);
 
   void update(double dt);
@@ -35,6 +35,7 @@ class World {
   std::vector<Event> consume_events();
 
   EntityId attach(EntityType entity_type, std::string external_id);
+  bool detach(const std::string& external_id);
   std::optional<EntityId> find_by_external_id(std::string& external_id) const;
 
   std::vector<EntityId> query_radius(Position& center, double radius) const;
@@ -50,6 +51,8 @@ class World {
  private:
   std::vector<EntityId> query(
       const std::function<bool(const Entity&)>& predicate) const;
+
+  void detach_attachment(EntityId entity_id);
 
   mutable std::mutex mutex_;
   WorldId id_;

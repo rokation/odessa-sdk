@@ -52,14 +52,7 @@ bool World::destroy(EntityId entity_id) {
     return false;
   }
 
-  for (auto attachment_it = attachments_.begin();
-       attachment_it != attachments_.end();) {
-    if (attachment_it->second.entity_id == entity_id) {
-      attachment_it = attachments_.erase(attachment_it);
-    } else {
-      attachment_it++;
-    }
-  }
+  detach_attachment(entity_id);
 
   entities_.erase(it);
   events_.push_back(EntityDestroyed{entity_id});
@@ -198,6 +191,21 @@ EntityId World::attach(EntityType entity_type, std::string external_id) {
   return entity_id;
 }
 
+void World::detach_attachment(EntityId entity_id) {
+  for (auto it = attachments_.begin(); it != attachments_.end();) {
+    if (it->second.entity_id == entity_id) {
+      it = attachments_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+bool World::detach(const std::string& external_id) {
+  std::lock_guard lock(mutex_);
+  return attachments_.erase(external_id) > 0;
+}
+
 std::optional<EntityId> World::find_by_external_id(
     std::string& external_id) const {
   std::lock_guard lock(mutex_);
@@ -272,6 +280,10 @@ std::vector<EntityId> World::query_radius(Position& center, double radius,
 }
 
 std::vector<EntityId> World::query_bbox(Position& min, Position& max) const {
+  if (min.x > max.x || min.y > max.y || min.z > max.z) {
+    return {};
+  }
+
   return query([&](const Entity& entity) {
     const auto& position = entity.position();
 
@@ -282,6 +294,10 @@ std::vector<EntityId> World::query_bbox(Position& min, Position& max) const {
 
 std::vector<EntityId> World::query_bbox(Position& min, Position& max,
                                         EntityType type) const {
+  if (min.x > max.x || min.y > max.y || min.z > max.z) {
+    return {};
+  }
+
   return query([&](const Entity& entity) {
     if (entity.type() != type) {
       return false;
