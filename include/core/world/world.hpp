@@ -16,12 +16,9 @@ class World {
  public:
   World();
   WorldId id() const;
-  std::optional<entity::EntitySnapshot> find(entity::EntityId entity_id);
-
   entity::EntityId spawn(entity::EntityType entity_type);
 
   void update(double dt);
-  bool move(entity::EntityId entity_id, component::Position position);
   bool destroy(entity::EntityId entity_id);
 
   void set_origin(component::LLA lla);

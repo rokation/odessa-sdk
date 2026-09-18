@@ -58,7 +58,11 @@ bool World::destroy(entity::EntityId entity_id) {
   return true;
 }
 
-component::LLA World::origin() const { return origin_; }
+component::LLA World::origin() const {
+  std::lock_guard lock(mutex_);
+
+  return origin_;
+}
 
 void World::set_origin(component::LLA origin) {
   std::lock_guard lock(mutex_);
@@ -336,18 +340,6 @@ std::vector<entity::EntityId> World::query_type(
   return query([&](const entity::Entity& entity) {
     return entity.type() == entity_type;
   });
-}
-
-std::optional<entity::EntitySnapshot> World::find(entity::EntityId entity_id) {
-  std::lock_guard lock(mutex_);
-
-  auto it = entities_.find(entity_id);
-
-  if (it == entities_.end()) {
-    return std::nullopt;
-  }
-
-  return it->second.snapshot();
 }
 
 entity::EntityId World::spawn_unlocked(entity::EntityType entity_type) {
