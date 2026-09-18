@@ -8,5 +8,6 @@
 namespace odessa::util {
 boost::uuids::uuid generate_uuid();
 std::string generate_uuid_string();
-std::string uuid_string_from_raw(boost::uuids::uuid);
+std::string uuid_to_string(boost::uuids::uuid);
+boost::uuids::uuid string_to_uuid(const std::string& value);
 }  // namespace odessa::util

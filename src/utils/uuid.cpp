@@ -16,7 +16,12 @@ std::string generate_uuid_string() {
   return uuid_str;
 }
 
-std::string uuid_string_from_raw(boost::uuids::uuid uuid) {
+std::string uuid_to_string(boost::uuids::uuid uuid) {
   return boost::uuids::to_string(uuid);
+}
+
+boost::uuids::uuid string_to_uuid(const std::string& value) {
+  boost::uuids::string_generator generator;
+  return generator(value);
 }
 }  // namespace odessa::util
