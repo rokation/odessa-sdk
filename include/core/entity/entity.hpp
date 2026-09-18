@@ -21,7 +21,7 @@ using EntityId = boost::uuids::uuid;
 class Entity {
  public:
   explicit Entity(EntityType type);
-  boost::uuids::uuid id() const;
+  EntityId id() const;
   EntityType type() const;
 
   component::LLA lla() const;
@@ -37,7 +37,7 @@ class Entity {
   void update(double dt);
 
  private:
-  boost::uuids::uuid id_;
+  EntityId id_;
   EntityType type_;
   component::LLA lla_;
   component::Position position_;

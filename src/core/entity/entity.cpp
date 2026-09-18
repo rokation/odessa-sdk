@@ -10,7 +10,7 @@ Entity::Entity(EntityType type)
       position_{},
       velocity_{} {}
 
-boost::uuids::uuid Entity::id() const { return id_; }
+EntityId Entity::id() const { return id_; }
 
 EntityType Entity::type() const { return type_; }
 
