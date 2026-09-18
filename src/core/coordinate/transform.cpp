@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace odessa::core {
+namespace odessa::core::coordinate {
 namespace {
 constexpr double k_pi = 3.14159265358979323846;
 constexpr double k_wgs84_a = 6378137.0;
@@ -14,7 +14,7 @@ struct Ecef {
   double z;
 };
 
-Ecef lla_to_ecef(const LLA& lla) {
+Ecef lla_to_ecef(const component::LLA& lla) {
   const double lat = lla.lat * M_PI / 180.0;
   const double lon = lla.lon * M_PI / 180.0;
 
@@ -28,8 +28,8 @@ Ecef lla_to_ecef(const LLA& lla) {
           (n * (1.0 - k_wgs84_e2) + lla.alt) * sin_lat};
 }
 
-Ecef enu_to_ecef(const Position& position, const Ecef& origin,
-                 const LLA& origin_lla) {
+Ecef enu_to_ecef(const component::Position& position, const Ecef& origin,
+                 const component::LLA& origin_lla) {
   const double lat = origin_lla.lat * k_pi / 180.0;
   const double lon = origin_lla.lon * k_pi / 180.0;
 
@@ -47,8 +47,8 @@ Ecef enu_to_ecef(const Position& position, const Ecef& origin,
       origin.z + std::cos(lat) * north + std::sin(lat) * up};
 }
 
-Position ecef_to_enu(const Ecef& target, const Ecef& origin,
-                     const LLA& origin_lla) {
+component::Position ecef_to_enu(const Ecef& target, const Ecef& origin,
+                                const component::LLA& origin_lla) {
   const double lat = origin_lla.lat * k_pi / 180.0;
   const double lon = origin_lla.lon * k_pi / 180.0;
 
@@ -63,7 +63,7 @@ Position ecef_to_enu(const Ecef& target, const Ecef& origin,
               std::cos(lat) * std::sin(lon) * dy + std::sin(lat) * dz};
 }
 
-LLA ecef_to_lla(const Ecef& ecef) {
+component::LLA ecef_to_lla(const Ecef& ecef) {
   constexpr double a = k_wgs84_a;
   constexpr double e2 = k_wgs84_e2;
 
@@ -89,18 +89,20 @@ LLA ecef_to_lla(const Ecef& ecef) {
 }
 }  // namespace
 
-Position lla_to_enu(const LLA& lla, const LLA& origin) {
+component::Position lla_to_enu(const component::LLA& lla,
+                               const component::LLA& origin) {
   const auto target_ecef = lla_to_ecef(lla);
   const auto origin_ecef = lla_to_ecef(origin);
 
   return ecef_to_enu(target_ecef, origin_ecef, origin);
 }
 
-LLA enu_to_lla(const Position& position, const LLA& origin) {
+component::LLA enu_to_lla(const component::Position& position,
+                          const component::LLA& origin) {
   const auto origin_ecef = lla_to_ecef(origin);
 
   const auto target_ecef = enu_to_ecef(position, origin_ecef, origin);
 
   return ecef_to_lla(target_ecef);
 }
-}  // namespace odessa::core
+}  // namespace odessa::core::coordinate

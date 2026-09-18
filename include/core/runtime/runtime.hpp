@@ -1,17 +1,16 @@
 #pragma once
 
 #include "core/world/world.hpp"
-
-namespace odessa::core {
+namespace odessa::core::runtime {
 class Runtime {
  public:
   void run();
   void stop();
   void update(double dt);
-  World& world();
+  world::World& world();
 
  private:
   std::atomic<bool> running_{false};
-  World world_;
+  world::World world_;
 };
-}  // namespace odessa::core
+}  // namespace odessa::core::runtime

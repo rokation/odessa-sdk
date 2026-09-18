@@ -4,9 +4,9 @@
 
 #include "core/entity/entity.hpp"
 
-namespace odessa::core {
+namespace odessa::core::attach {
 struct Attachment {
-  EntityId entity_id;
+  odessa::core::entity::EntityId entity_id;
   std::string external_id;
 };
-}  // namespace odessa::core
+}  // namespace odessa::core::attach

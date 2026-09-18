@@ -2,7 +2,9 @@
 
 #include <thread>
 
-namespace odessa::core {
+#include "core/world/world.hpp"
+
+namespace odessa::core::runtime {
 void Runtime::run() {
   running_ = true;
 
@@ -27,5 +29,5 @@ void Runtime::stop() { running_ = false; }
 
 void Runtime::update(double dt) { world().update(dt); }
 
-World& Runtime::world() { return world_; }
-}  // namespace odessa::core
+world::World& Runtime::world() { return world_; }
+}  // namespace odessa::core::runtime

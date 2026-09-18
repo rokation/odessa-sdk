@@ -2,19 +2,19 @@
 
 #include "core/entity/entity.hpp"
 
-namespace odessa::core {
+namespace odessa::core::event {
 struct EntitySpawned {
-  EntityId entity_id;
+  entity::EntityId entity_id;
 };
 
 struct EntityMoved {
-  EntityId entity_id;
-  EntitySnapshot snapshot;
+  entity::EntityId entity_id;
+  entity::EntitySnapshot snapshot;
 };
 
 struct EntityDestroyed {
-  EntityId entity_id;
+  entity::EntityId entity_id;
 };
 
 using Event = std::variant<EntitySpawned, EntityMoved, EntityDestroyed>;
-}  // namespace odessa::core
+}  // namespace odessa::core::event

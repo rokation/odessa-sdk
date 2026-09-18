@@ -2,11 +2,11 @@
 
 #include <boost/uuid/uuid.hpp>
 
-#include "core/components/lla.hpp"
-#include "core/components/position.hpp"
-#include "core/components/velocity.hpp"
+#include "core/component/lla.hpp"
+#include "core/component/position.hpp"
+#include "core/component/velocity.hpp"
 
-namespace odessa::core {
+namespace odessa::core::entity {
 struct EntitySnapshot;
 enum class EntityType {
   DRONE,
@@ -24,14 +24,14 @@ class Entity {
   boost::uuids::uuid id() const;
   EntityType type() const;
 
-  LLA lla() const;
-  void set_lla(LLA lla);
+  component::LLA lla() const;
+  void set_lla(component::LLA lla);
 
-  Position position() const;
-  void set_position(Position position);
+  component::Position position() const;
+  void set_position(component::Position position);
 
-  Velocity velocity() const;
-  void set_velocity(Velocity velocity);
+  component::Velocity velocity() const;
+  void set_velocity(component::Velocity velocity);
 
   EntitySnapshot snapshot() const;
   void update(double dt);
@@ -39,17 +39,17 @@ class Entity {
  private:
   boost::uuids::uuid id_;
   EntityType type_;
-  LLA lla_;
-  Position position_;
-  Velocity velocity_;
+  component::LLA lla_;
+  component::Position position_;
+  component::Velocity velocity_;
 };
 
 struct EntitySnapshot {
   EntityId id;
   EntityType type;
 
-  LLA lla;
-  Position position;
-  Velocity velocity;
+  component::LLA lla;
+  component::Position position;
+  component::Velocity velocity;
 };
-}  // namespace odessa::core
+}  // namespace odessa::core::entity

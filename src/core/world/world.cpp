@@ -6,17 +6,17 @@
 #include <vector>
 
 #include "core/attach/attach.hpp"
-#include "core/components/lla.hpp"
+#include "core/component/lla.hpp"
 #include "core/entity/entity.hpp"
 #include "core/event/event.hpp"
 #include "utils/uuid.hpp"
 
-namespace odessa::core {
+namespace odessa::core::world {
 World::World() : origin_{} { id_ = util::generate_uuid(); }
 
 WorldId World::id() const { return id_; }
 
-EntityId World::spawn(EntityType entity_type) {
+entity::EntityId World::spawn(entity::EntityType entity_type) {
   std::lock_guard lock(mutex_);
   return spawn_unlocked(entity_type);
 }
@@ -36,12 +36,12 @@ void World::update(double dt) {
 
     if (old_position.x != new_position.x || old_position.y != new_position.y ||
         old_position.z != new_position.z) {
-      events_.push_back(EntityMoved{entity_id, entity.snapshot()});
+      events_.push_back(event::EntityMoved{entity_id, entity.snapshot()});
     }
   }
 }
 
-bool World::destroy(EntityId entity_id) {
+bool World::destroy(entity::EntityId entity_id) {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -53,20 +53,20 @@ bool World::destroy(EntityId entity_id) {
   detach_attachment(entity_id);
 
   entities_.erase(it);
-  events_.push_back(EntityDestroyed{entity_id});
+  events_.push_back(event::EntityDestroyed{entity_id});
 
   return true;
 }
 
-LLA World::origin() const { return origin_; }
+component::LLA World::origin() const { return origin_; }
 
-void World::set_origin(LLA origin) {
+void World::set_origin(component::LLA origin) {
   std::lock_guard lock(mutex_);
 
   origin_ = origin;
 }
 
-bool World::set_lla(EntityId entity_id, LLA lla) {
+bool World::set_lla(entity::EntityId entity_id, component::LLA lla) {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -76,11 +76,12 @@ bool World::set_lla(EntityId entity_id, LLA lla) {
 
   auto& entity = it->second;
   entity.set_lla(lla);
-  events_.push_back(EntityMoved{entity_id, entity.snapshot()});
+  events_.push_back(event::EntityMoved{entity_id, entity.snapshot()});
   return true;
 }
 
-bool World::set_position(EntityId entity_id, Position position) {
+bool World::set_position(entity::EntityId entity_id,
+                         component::Position position) {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -90,12 +91,13 @@ bool World::set_position(EntityId entity_id, Position position) {
 
   auto& entity = it->second;
   entity.set_position(position);
-  events_.push_back(EntityMoved{entity_id, entity.snapshot()});
+  events_.push_back(event::EntityMoved{entity_id, entity.snapshot()});
 
   return true;
 }
 
-bool World::set_velocity(EntityId entity_id, Velocity velocity) {
+bool World::set_velocity(entity::EntityId entity_id,
+                         component::Velocity velocity) {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -108,7 +110,7 @@ bool World::set_velocity(EntityId entity_id, Velocity velocity) {
   return true;
 }
 
-std::optional<LLA> World::get_lla(EntityId entity_id) const {
+std::optional<component::LLA> World::get_lla(entity::EntityId entity_id) const {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -119,7 +121,8 @@ std::optional<LLA> World::get_lla(EntityId entity_id) const {
   return it->second.lla();
 }
 
-std::optional<Position> World::get_position(EntityId entity_id) const {
+std::optional<component::Position> World::get_position(
+    entity::EntityId entity_id) const {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -130,7 +133,8 @@ std::optional<Position> World::get_position(EntityId entity_id) const {
   return it->second.position();
 }
 
-std::optional<Velocity> World::get_velocity(EntityId entity_id) const {
+std::optional<component::Velocity> World::get_velocity(
+    entity::EntityId entity_id) const {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -141,7 +145,8 @@ std::optional<Velocity> World::get_velocity(EntityId entity_id) const {
   return it->second.velocity();
 }
 
-std::optional<EntitySnapshot> World::snapshot(EntityId entity_id) const {
+std::optional<entity::EntitySnapshot> World::snapshot(
+    entity::EntityId entity_id) const {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -153,10 +158,10 @@ std::optional<EntitySnapshot> World::snapshot(EntityId entity_id) const {
   return it->second.snapshot();
 }
 
-std::vector<EntitySnapshot> World::snapshot_all() const {
+std::vector<entity::EntitySnapshot> World::snapshot_all() const {
   std::lock_guard lock(mutex_);
 
-  std::vector<EntitySnapshot> snapshots;
+  std::vector<entity::EntitySnapshot> snapshots;
   snapshots.reserve(entities_.size());
 
   for (const auto& [entity_id, entity] : entities_) {
@@ -166,16 +171,16 @@ std::vector<EntitySnapshot> World::snapshot_all() const {
   return snapshots;
 }
 
-std::vector<Event> World::consume_events() {
+std::vector<event::Event> World::consume_events() {
   std::lock_guard lock(mutex_);
 
-  std::vector<Event> events;
+  std::vector<event::Event> events;
   events.swap(events_);
 
   return events;
 }
 
-bool World::contains(EntityId entity_id) const {
+bool World::contains(entity::EntityId entity_id) const {
   std::lock_guard lock(mutex_);
 
   return entities_.contains(entity_id);
@@ -187,7 +192,8 @@ std::size_t World::entity_count() const {
   return entities_.size();
 }
 
-EntityId World::attach(EntityType entity_type, std::string external_id) {
+entity::EntityId World::attach(entity::EntityType entity_type,
+                               std::string external_id) {
   std::lock_guard lock(mutex_);
 
   auto it = attachments_.find(external_id);
@@ -196,11 +202,11 @@ EntityId World::attach(EntityType entity_type, std::string external_id) {
   }
 
   auto entity_id = spawn_unlocked(entity_type);
-  attachments_.emplace(external_id, Attachment{entity_id, external_id});
+  attachments_.emplace(external_id, attach::Attachment{entity_id, external_id});
   return entity_id;
 }
 
-void World::detach_attachment(EntityId entity_id) {
+void World::detach_attachment(entity::EntityId entity_id) {
   for (auto it = attachments_.begin(); it != attachments_.end();) {
     if (it->second.entity_id == entity_id) {
       it = attachments_.erase(it);
@@ -215,7 +221,7 @@ bool World::detach(const std::string& external_id) {
   return attachments_.erase(external_id) > 0;
 }
 
-std::optional<EntityId> World::find_by_external_id(
+std::optional<entity::EntityId> World::find_by_external_id(
     const std::string& external_id) const {
   std::lock_guard lock(mutex_);
   auto it = attachments_.find(external_id);
@@ -227,9 +233,9 @@ std::optional<EntityId> World::find_by_external_id(
   return it->second.entity_id;
 }
 
-std::vector<EntityId> World::query(
-    const std::function<bool(const Entity&)>& predicate) const {
-  std::vector<EntityId> result;
+std::vector<entity::EntityId> World::query(
+    const std::function<bool(const entity::Entity&)>& predicate) const {
+  std::vector<entity::EntityId> result;
 
   for (const auto [entity_id, entity] : entities_) {
     if (predicate(entity)) {
@@ -240,8 +246,8 @@ std::vector<EntityId> World::query(
   return result;
 }
 
-std::vector<EntityId> World::query_radius(Position& center,
-                                          double radius) const {
+std::vector<entity::EntityId> World::query_radius(component::Position& center,
+                                                  double radius) const {
   if (radius < 0.0) {
     return {};
   }
@@ -249,7 +255,7 @@ std::vector<EntityId> World::query_radius(Position& center,
   double radius_squared = radius * radius;
 
   std::lock_guard lock(mutex_);
-  return query([&](const Entity& entity) {
+  return query([&](const entity::Entity& entity) {
     const auto& position = entity.position();
 
     const double dx = position.x - center.x;
@@ -262,8 +268,9 @@ std::vector<EntityId> World::query_radius(Position& center,
   });
 }
 
-std::vector<EntityId> World::query_radius(Position& center, double radius,
-                                          EntityType entity_type) const {
+std::vector<entity::EntityId> World::query_radius(
+    component::Position& center, double radius,
+    entity::EntityType entity_type) const {
   if (radius < 0.0) {
     return {};
   }
@@ -271,7 +278,7 @@ std::vector<EntityId> World::query_radius(Position& center, double radius,
   double radius_squared = radius * radius;
 
   std::lock_guard lock(mutex_);
-  return query([&](const Entity& entity) {
+  return query([&](const entity::Entity& entity) {
     if (entity.type() != entity_type) {
       return false;
     }
@@ -288,13 +295,14 @@ std::vector<EntityId> World::query_radius(Position& center, double radius,
   });
 }
 
-std::vector<EntityId> World::query_bbox(Position& min, Position& max) const {
+std::vector<entity::EntityId> World::query_bbox(
+    component::Position& min, component::Position& max) const {
   if (min.x > max.x || min.y > max.y || min.z > max.z) {
     return {};
   }
 
   std::lock_guard lock(mutex_);
-  return query([&](const Entity& entity) {
+  return query([&](const entity::Entity& entity) {
     const auto& position = entity.position();
 
     return position.x >= min.x && position.x <= max.x && position.y >= min.y &&
@@ -302,14 +310,15 @@ std::vector<EntityId> World::query_bbox(Position& min, Position& max) const {
   });
 }
 
-std::vector<EntityId> World::query_bbox(Position& min, Position& max,
-                                        EntityType entity_type) const {
+std::vector<entity::EntityId> World::query_bbox(
+    component::Position& min, component::Position& max,
+    entity::EntityType entity_type) const {
   if (min.x > max.x || min.y > max.y || min.z > max.z) {
     return {};
   }
 
   std::lock_guard lock(mutex_);
-  return query([&](const Entity& entity) {
+  return query([&](const entity::Entity& entity) {
     if (entity.type() != entity_type) {
       return false;
     }
@@ -320,14 +329,16 @@ std::vector<EntityId> World::query_bbox(Position& min, Position& max,
   });
 }
 
-std::vector<EntityId> World::query_type(EntityType entity_type) const {
+std::vector<entity::EntityId> World::query_type(
+    entity::EntityType entity_type) const {
   std::lock_guard lock(mutex_);
 
-  return query(
-      [&](const Entity& entity) { return entity.type() == entity_type; });
+  return query([&](const entity::Entity& entity) {
+    return entity.type() == entity_type;
+  });
 }
 
-std::optional<EntitySnapshot> World::find(EntityId entity_id) {
+std::optional<entity::EntitySnapshot> World::find(entity::EntityId entity_id) {
   std::lock_guard lock(mutex_);
 
   auto it = entities_.find(entity_id);
@@ -339,13 +350,13 @@ std::optional<EntitySnapshot> World::find(EntityId entity_id) {
   return it->second.snapshot();
 }
 
-EntityId World::spawn_unlocked(EntityType entity_type) {
-  Entity entity(entity_type);
-  EntityId entity_id = entity.id();
+entity::EntityId World::spawn_unlocked(entity::EntityType entity_type) {
+  entity::Entity entity(entity_type);
+  entity::EntityId entity_id = entity.id();
 
   entities_.emplace(entity_id, std::move(entity));
-  events_.push_back(EntitySpawned{entity_id});
+  events_.push_back(event::EntitySpawned{entity_id});
 
   return entity_id;
 }
-}  // namespace odessa::core
+}  // namespace odessa::core::world

@@ -2,7 +2,7 @@
 
 #include "utils/uuid.hpp"
 
-namespace odessa::core {
+namespace odessa::core::entity {
 Entity::Entity(EntityType type)
     : id_(util::generate_uuid()),
       type_(type),
@@ -14,17 +14,21 @@ boost::uuids::uuid Entity::id() const { return id_; }
 
 EntityType Entity::type() const { return type_; }
 
-LLA Entity::lla() const { return lla_; }
+component::LLA Entity::lla() const { return lla_; }
 
-Position Entity::position() const { return position_; }
+component::Position Entity::position() const { return position_; }
 
-Velocity Entity::velocity() const { return velocity_; }
+component::Velocity Entity::velocity() const { return velocity_; }
 
-void Entity::set_lla(LLA lla) { lla_ = lla; }
+void Entity::set_lla(component::LLA lla) { lla_ = lla; }
 
-void Entity::set_position(Position position) { position_ = position; }
+void Entity::set_position(component::Position position) {
+  position_ = position;
+}
 
-void Entity::set_velocity(Velocity velocity) { velocity_ = velocity; }
+void Entity::set_velocity(component::Velocity velocity) {
+  velocity_ = velocity;
+}
 
 void Entity::update(double dt) {
   position_.x += velocity_.x * dt;
@@ -36,4 +40,4 @@ EntitySnapshot Entity::snapshot() const {
   return EntitySnapshot{id_, type_, lla_, position_, velocity_};
 }
 
-}  // namespace odessa::core
+}  // namespace odessa::core::entity
