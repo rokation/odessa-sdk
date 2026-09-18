@@ -3,6 +3,8 @@
 #include <thread>
 
 namespace odessa::server {
+Server::~Server() { stop(); }
+
 void Server::run() {
   running_ = true;
 

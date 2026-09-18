@@ -7,6 +7,8 @@
 namespace odessa::server {
 class Server {
  public:
+  Server();
+  ~Server();
   void run();
   void stop();
 
