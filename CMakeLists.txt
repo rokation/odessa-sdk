@@ -19,6 +19,7 @@ add_executable(odessa_example
     src/transport/mqtt_client.cpp
     src/core/coordinate/transform.cpp
     src/core/serialization/entity_json.cpp
+    src/core/command/command.cpp
 )
 
 target_include_directories(odessa_example PRIVATE
