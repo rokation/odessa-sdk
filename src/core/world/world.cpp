@@ -12,7 +12,7 @@
 #include "utils/uuid.hpp"
 
 namespace odessa::core {
-World::World() { id_ = util::generate_uuid(); }
+World::World() : origin_{} { id_ = util::generate_uuid(); }
 
 WorldId World::id() const { return id_; }
 
@@ -58,6 +58,14 @@ bool World::destroy(EntityId entity_id) {
   return true;
 }
 
+LLA World::origin() const { return origin_; }
+
+void World::set_origin(LLA origin) {
+  std::lock_guard lock(mutex_);
+
+  origin_ = origin;
+}
+
 bool World::set_lla(EntityId entity_id, LLA lla) {
   std::lock_guard lock(mutex_);
 
@@ -86,6 +94,7 @@ bool World::set_position(EntityId entity_id, Position position) {
 
   return true;
 }
+
 bool World::set_velocity(EntityId entity_id, Velocity velocity) {
   std::lock_guard lock(mutex_);
 
@@ -186,7 +195,7 @@ EntityId World::attach(EntityType entity_type, std::string external_id) {
     return it->second.entity_id;
   }
 
-  auto entity_id = spawn(entity_type);
+  auto entity_id = spawn_unlocked(entity_type);
   attachments_.emplace(external_id, Attachment{entity_id, external_id});
   return entity_id;
 }

@@ -21,10 +21,13 @@ class World {
   bool move(EntityId entity_id, Position position);
   bool destroy(EntityId entity_id);
 
+  void set_origin(LLA lla);
+
   bool set_lla(EntityId entity_id, LLA lla);
   bool set_position(EntityId entity_id, Position position);
   bool set_velocity(EntityId entity_id, Velocity velocity);
 
+  LLA origin() const;
   std::optional<LLA> get_lla(EntityId entity_id) const;
   std::optional<Position> get_position(EntityId entity_id) const;
   std::optional<Velocity> get_velocity(EntityId entity_id) const;
@@ -55,11 +58,11 @@ class World {
   EntityId spawn_unlocked(EntityType entity_type);
   std::vector<EntityId> query(
       const std::function<bool(const Entity&)>& predicate) const;
-
   void detach_attachment(EntityId entity_id);
 
   mutable std::mutex mutex_;
   WorldId id_;
+  LLA origin_;
   std::unordered_map<EntityId, Entity> entities_;
   std::unordered_map<std::string, Attachment> attachments_;
   std::vector<Event> events_;
