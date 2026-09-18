@@ -237,110 +237,113 @@ std::optional<entity::EntityId> World::find_by_external_id(
   return it->second.entity_id;
 }
 
-std::vector<entity::EntityId> World::query(
-    const std::function<bool(const entity::Entity&)>& predicate) const {
-  std::vector<entity::EntityId> result;
+// std::vector<entity::EntityId> World::query(
+//     const std::function<bool(const entity::Entity&)>& predicate) const {
+//   std::vector<entity::EntityId> result;
 
-  for (const auto [entity_id, entity] : entities_) {
-    if (predicate(entity)) {
-      result.push_back(entity_id);
-    }
-  }
+//   for (const auto [entity_id, entity] : entities_) {
+//     if (predicate(entity)) {
+//       result.push_back(entity_id);
+//     }
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
-std::vector<entity::EntityId> World::query_radius(component::Position& center,
-                                                  double radius) const {
-  if (radius < 0.0) {
-    return {};
-  }
+// std::vector<entity::EntityId> World::query_radius(component::Position&
+// center,
+//                                                   double radius) const {
+//   if (radius < 0.0) {
+//     return {};
+//   }
 
-  double radius_squared = radius * radius;
+//   double radius_squared = radius * radius;
 
-  std::lock_guard lock(mutex_);
-  return query([&](const entity::Entity& entity) {
-    const auto& position = entity.position();
+//   std::lock_guard lock(mutex_);
+//   return query([&](const entity::Entity& entity) {
+//     const auto& position = entity.position();
 
-    const double dx = position.x - center.x;
-    const double dy = position.y - center.y;
-    const double dz = position.z - center.z;
+//     const double dx = position.x - center.x;
+//     const double dy = position.y - center.y;
+//     const double dz = position.z - center.z;
 
-    const double distance_squared = dx * dx + dy * dy + dz * dz;
+//     const double distance_squared = dx * dx + dy * dy + dz * dz;
 
-    return distance_squared <= radius_squared;
-  });
-}
+//     return distance_squared <= radius_squared;
+//   });
+// }
 
-std::vector<entity::EntityId> World::query_radius(
-    component::Position& center, double radius,
-    entity::EntityType entity_type) const {
-  if (radius < 0.0) {
-    return {};
-  }
+// std::vector<entity::EntityId> World::query_radius(
+//     component::Position& center, double radius,
+//     entity::EntityType entity_type) const {
+//   if (radius < 0.0) {
+//     return {};
+//   }
 
-  double radius_squared = radius * radius;
+//   double radius_squared = radius * radius;
 
-  std::lock_guard lock(mutex_);
-  return query([&](const entity::Entity& entity) {
-    if (entity.type() != entity_type) {
-      return false;
-    }
+//   std::lock_guard lock(mutex_);
+//   return query([&](const entity::Entity& entity) {
+//     if (entity.type() != entity_type) {
+//       return false;
+//     }
 
-    const auto& position = entity.position();
+//     const auto& position = entity.position();
 
-    const double dx = position.x - center.x;
-    const double dy = position.y - center.y;
-    const double dz = position.z - center.z;
+//     const double dx = position.x - center.x;
+//     const double dy = position.y - center.y;
+//     const double dz = position.z - center.z;
 
-    const double distance_squared = dx * dx + dy * dy + dz * dz;
+//     const double distance_squared = dx * dx + dy * dy + dz * dz;
 
-    return distance_squared <= radius_squared;
-  });
-}
+//     return distance_squared <= radius_squared;
+//   });
+// }
 
-std::vector<entity::EntityId> World::query_bbox(
-    component::Position& min, component::Position& max) const {
-  if (min.x > max.x || min.y > max.y || min.z > max.z) {
-    return {};
-  }
+// std::vector<entity::EntityId> World::query_bbox(
+//     component::Position& min, component::Position& max) const {
+//   if (min.x > max.x || min.y > max.y || min.z > max.z) {
+//     return {};
+//   }
 
-  std::lock_guard lock(mutex_);
-  return query([&](const entity::Entity& entity) {
-    const auto& position = entity.position();
+//   std::lock_guard lock(mutex_);
+//   return query([&](const entity::Entity& entity) {
+//     const auto& position = entity.position();
 
-    return position.x >= min.x && position.x <= max.x && position.y >= min.y &&
-           position.y <= max.y && position.z >= min.z && position.z <= max.z;
-  });
-}
+//     return position.x >= min.x && position.x <= max.x && position.y >= min.y
+//     &&
+//            position.y <= max.y && position.z >= min.z && position.z <= max.z;
+//   });
+// }
 
-std::vector<entity::EntityId> World::query_bbox(
-    component::Position& min, component::Position& max,
-    entity::EntityType entity_type) const {
-  if (min.x > max.x || min.y > max.y || min.z > max.z) {
-    return {};
-  }
+// std::vector<entity::EntityId> World::query_bbox(
+//     component::Position& min, component::Position& max,
+//     entity::EntityType entity_type) const {
+//   if (min.x > max.x || min.y > max.y || min.z > max.z) {
+//     return {};
+//   }
 
-  std::lock_guard lock(mutex_);
-  return query([&](const entity::Entity& entity) {
-    if (entity.type() != entity_type) {
-      return false;
-    }
-    const auto& position = entity.position();
+//   std::lock_guard lock(mutex_);
+//   return query([&](const entity::Entity& entity) {
+//     if (entity.type() != entity_type) {
+//       return false;
+//     }
+//     const auto& position = entity.position();
 
-    return position.x >= min.x && position.x <= max.x && position.y >= min.y &&
-           position.y <= max.y && position.z >= min.z && position.z <= max.z;
-  });
-}
+//     return position.x >= min.x && position.x <= max.x && position.y >= min.y
+//     &&
+//            position.y <= max.y && position.z >= min.z && position.z <= max.z;
+//   });
+// }
 
-std::vector<entity::EntityId> World::query_type(
-    entity::EntityType entity_type) const {
-  std::lock_guard lock(mutex_);
+// std::vector<entity::EntityId> World::query_type(
+//     entity::EntityType entity_type) const {
+//   std::lock_guard lock(mutex_);
 
-  return query([&](const entity::Entity& entity) {
-    return entity.type() == entity_type;
-  });
-}
+//   return query([&](const entity::Entity& entity) {
+//     return entity.type() == entity_type;
+//   });
+// }
 
 entity::EntityId World::spawn_unlocked(entity::EntityType entity_type) {
   entity::Entity entity(entity_type);
