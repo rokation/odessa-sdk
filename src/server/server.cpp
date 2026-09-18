@@ -6,12 +6,20 @@ namespace odessa::server {
 Server::~Server() { stop(); }
 
 void Server::run() {
+  if (running_) {
+    return;
+  }
+
   running_ = true;
 
   runtime_thread_ = std::thread([this]() { runtime_.run(); });
 };
 
 void Server::stop() {
+  if (!running_) {
+    return;
+  }
+
   running_ = false;
   runtime_.stop();
 
