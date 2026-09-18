@@ -1,5 +1,7 @@
 #pragma once
 
+#include <variant>
+
 #include "core/entity/entity.hpp"
 
 namespace odessa::core::event {
