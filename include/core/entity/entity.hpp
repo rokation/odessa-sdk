@@ -8,7 +8,15 @@
 
 namespace odessa::core {
 struct EntitySnapshot;
-enum class EntityType { DRONE, ROBOT, SENSOR, VEHICLE, CAMERA, VESSEL };
+enum class EntityType {
+  DRONE,
+  ROBOT,
+  SENSOR,
+  VEHICLE,
+  CAMERA,
+  VESSEL,
+  UNKNOWN
+};
 using EntityId = boost::uuids::uuid;
 class Entity {
  public:
